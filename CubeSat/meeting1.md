@@ -24,6 +24,9 @@ Relevant for electronics as well:
 To do:
 
 - (Learning): created inverted pendulum simulation model in both Simulink and MATLAB (as demonstrated in the  controls tutorial)
+- (learning): understand at surface level, to the most extent that is actuallu relevant to this project: state spaces, fourier transforms, laplace transform
+- (Learning): understand at surface level to the most extent that is relevant to the project - transfer functions and PID
+- have a working knowlegde of the sensors that the electonics team has decided on adn their communication protocols
 - design control loop to read sensor data and actuate the motors appropriately (read sensor data --> black box --> acutate motors approrpraitely)
   - use simulink fro design and testing
 - decide on language to use
