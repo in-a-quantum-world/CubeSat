@@ -10,6 +10,10 @@ Sensor values: linear acc, angular velocity, orientation (general spatial arrage
   - SPI commands:
 
 
+VERY USEFUL DOCUMENT: [commons.erau.edu/cgi/viewcontent.cgi?article=1138&amp;context=beyond](https://commons.erau.edu/cgi/viewcontent.cgi?article=1138&context=beyond)
+
+
+Combined energy and attitude contol sytsem for small satellites: [www.sciencedirect.com/science/article/pii/S0094576503003382](https://www.sciencedirect.com/science/article/pii/S0094576503003382)
 
 Relevant for electronics as well:
 
