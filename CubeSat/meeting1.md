@@ -2,16 +2,12 @@ MPU6050 - 3 axies accelerometer, 3 axes gyroscope
 
 Sensor values: linear acc, angular velocity, orientation (general spatial arragenment, roll pitch yaw), attitude (arrangement in relation to a defined reference eg horizontal, vertical), displacement. contorl loop will use this
 
-
 (irrelevant: temperature sensor)
-
 
 - We need SPI commands to set the attitude
   - SPI commands:
 
-
 VERY USEFUL DOCUMENT: [commons.erau.edu/cgi/viewcontent.cgi?article=1138&amp;context=beyond](https://commons.erau.edu/cgi/viewcontent.cgi?article=1138&context=beyond)
-
 
 Combined energy and attitude contol sytsem for small satellites: [www.sciencedirect.com/science/article/pii/S0094576503003382](https://www.sciencedirect.com/science/article/pii/S0094576503003382)
 
@@ -19,7 +15,6 @@ Relevant for electronics as well:
 
 - know which communication protocol to use (WiFi, UDP, TCP??)
 - know all the sensors and all the relevant data from the sensors which we will be using directly for the control loop/
-
 
 To do:
 
