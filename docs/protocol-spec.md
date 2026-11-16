@@ -7,10 +7,32 @@ Version 0.1 (draft) · Owner: Kai · Status: not yet agreed
 
 
 ## 2. Physical layer (pins, SPI mode, clock, data ready)
-Pins: CS IO10→PA4, SCK IO12→PA5, MOSI IO11→PA7, MISO IO13←PA6, data ready PD10→IO4
-SPI settings: mode 0, MSB first, start at 1 MHz, up to about 10 MHz
-Roles: the ESP32 is master
-Data ready: one line on what it means, when it goes high, and when it goes low (that part is yours to define)
+| Signal | ESP32-S3 pin | STM32 pin | Direction | Purpose |
+|---|---|---|---|---|
+| CS | IO10 | PA4 | ESP32-S3 to STM32 | Indicates when ESP32-S3 starts/finishes speaking to STM32. low: speaking. high: idle |
+| SCK | IO12 | PA5 | ESP32-S3 to STM32 | Clock |
+| MOSI | IO11 | PA7 | ESP32-S3 to STM32 | Sends bits from ESP32-S3 to STM32 |
+| MISO | IO13 | PA6 | STM32 to ESP32-S3 | Sends bits from STM32 to ESP32-S3 |
+| Data Ready | IO4 | PD10 | STM32 to ESP32-S3 | Indicator for when STM32 reply is loaded and waiting to be read |
+
+### SPI settings
+- Mode: 0
+- Bit order: MSB first
+- Clock: Start at 1 MHz, up to about 10 MHz
+
+### Roles
+- Master: ESP32-S3
+- Slave: STM32
+
+### (PROPOSED) Data ready
+- High: Reply loaded and waiting to be clocked out.
+- Low: After the last reply byte has been clocked out.
+  - The ESP32-S3 starts reading and gives up halfway, the line stays high, so the ESP32-S3 can see the reply is still waiting and read again.
+- No new requests while high.
+  - The ESP32-S3 must read the reply before sending a new request. 
+- Timeout if it never goes high.
+  - The ESP32-S3 waits up to a timeout (value in §7) then retries.
+
 
 ## 3. Frame format
 
