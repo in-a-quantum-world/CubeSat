@@ -45,8 +45,19 @@ Version 0.1 (draft) · Owner: Kai · Status: not yet agreed
 | N+3 to N+4 | CRC | 2 | (PROPOSED) CRC-16/CCITT-FALSE over Command + Length + Payload, high byte first |
 
 ## 4. Numbers, byte order and units
+
+**(PROPOSED) Angles use float32.** Reason: Proposed in team docs, float32 sends decimals directly
+
+**(PROPOSED) Multi-byte numbers are little endian.** Reason: Both chips store numbers little-endian natively
+
+**(PROPOSED) Angles in degrees.** Reason: Easy for people to read in logs, the GUI and the PDR slides
+
+**(OPEN) Axis Order and Sign Convention.** TBC by Anisha/Naoki?
+
+
 ## 5. Commands and reply layouts
 ## 6. ACK, NACK and errors
 ## 7. Timing
 ## 8. Worked examples (hex)
 ## 9. Open questions and version history
+**(OPEN) Axis Order and Sign Convention.** TBC by Anisha/Naoki?
