@@ -144,10 +144,38 @@ Replies repeat the request's command code so the ESP32-S3 can check the reply ma
 ### Retries
 
 - (PROPOSED) Upon NACK, the ESP32-S3 resends up to 3 tries (final value in §7), then reports a comms fault to the laptop.
-- (PROPOSED) If reply itself arrives at the ESP32-S3 with bad CRC/no arrival: Treat it as failed attempt, try resend (counted as one of 3 tries). 
+- (PROPOSED) If reply itself arrives at the ESP32-S3 with bad CRC/no arrival within the data-ready timeout (§7): Treat it as failed attempt, try resend (counted as one of 3 tries). 
 
 
 ## 7. Timing
+
+**(PROPOSED)** All values assume SPI at 1 MHz.
+
+### Transfer times
+
+Formula: Time on the wire (µs) = bytes × 8 ÷ clock (MHz)
+
+| Frame | Bytes | Time at 1 MHz |
+|---|---|---|
+| GET_ATTITUDE request | 5 | 40 µs |
+| GET_ATTITUDE reply | 21 | 168 µs |
+
+### Timeouts and limits
+
+| Item | Value | Reason |
+|---|---|---|
+| Data-ready timeout | 5 ms | 1 ms worst case, 5× safety margin |
+| Retry limit | 3 tries | 3 × 5 ms = 15 ms, enough tries to ride out brief glitch and quickly report a real fault |
+| Poll rate | 100 Hz (every 10 ms) | Upper limit of team's suggested 50-100 Hz plan |
+| Minimum gap between frames | 100 µs after CS goes high (TBC by Role 3) | Gives STM32 ample time to re-arm DMA for incoming bytes |
+
+### Missed polls
+
+- If retries run past the next poll time: Skip missed polls
+  - Old readings become obsolete once there are newer readings
+  - Sending old polls wastes bus time and delays the fresh reading
+
+
 ## 8. Worked examples (hex)
 ## 9. Open questions and version history
 **(OPEN) Axis Order and Sign Convention.** TBC by Anisha/Naoki?
