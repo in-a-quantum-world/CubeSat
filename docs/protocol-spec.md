@@ -1,10 +1,21 @@
 # ESP32 ↔ STM32 Protocol Spec
 
-Version 0.1 (draft) · Owner: Kai · Status: not yet agreed
+**Version 0.1 (draft), 17 Nov 2026 ·** Status: PROPOSED, not yet agreed.
 
 ## 1. Purpose and scope
 
+- **Purpose** 
+  - This spec defines the bytes sent between the ESP32-S3 and the STM32 over SPI, so that both ends can be written separately and still work together.
 
+- **Covers**
+  - SPI1 link bewteen ESP32-S3 (master) and STM32 (slave)
+  - SPI2 external header: same frame, commands and replies (§3–§8), because both ports share one parser. Only the pins in §2 differ.
+
+- **For** 
+  - Controls Role 2: Check the sensor and attitude fields in §5
+  - Controls Role 3: Writes STM32 side
+  - Controls Role 4: Writes ESP32-S3 side
+  - Electronics: check pins in §2 against the board
 
 ## 2. Physical layer (pins, SPI mode, clock, data ready)
 | Signal | ESP32-S3 pin | STM32 pin | Direction | Purpose |
@@ -209,4 +220,4 @@ Checked with Python struct.pack('<ff', 10.0, 0.0) and binascii.crc_hqx(data, 0xF
 
 | Version | Date | Change |
 |---|---|---|
-| 0.1 | 17 Nov 2026 | First draft: §2–§8 |
+| 0.1 | 17 Nov 2026 | First draft: §1–§9 |
