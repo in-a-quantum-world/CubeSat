@@ -1,6 +1,6 @@
-# ESP32 ↔ STM32 Protocol Spec
+# ESP32-S3 ↔ STM32 Protocol Spec
 
-**Version 0.1 (draft), 17 Nov 2026 ·** Status: PROPOSED, not yet agreed.
+**Version 0.1 (draft), 17 Nov 2026** · Status: PROPOSED, not yet agreed.
 
 ## 1. Purpose and scope
 
@@ -8,7 +8,7 @@
   - This spec defines the bytes sent between the ESP32-S3 and the STM32 over SPI, so that both ends can be written separately and still work together.
 
 - **Covers**
-  - SPI1 link bewteen ESP32-S3 (master) and STM32 (slave)
+  - SPI1 link between ESP32-S3 (master) and STM32 (slave)
   - SPI2 external header: same frame, commands and replies (§3–§8), because both ports share one parser. Only the pins in §2 differ.
 
 - **For** 
@@ -24,7 +24,7 @@
 | SCK | IO12 | PA5 | ESP32-S3 to STM32 | Clock |
 | MOSI | IO11 | PA7 | ESP32-S3 to STM32 | Sends bits from ESP32-S3 to STM32 |
 | MISO | IO13 | PA6 | STM32 to ESP32-S3 | Sends bits from STM32 to ESP32-S3 |
-| Data Ready | IO4 | PD10 | STM32 to ESP32-S3 | Indicator for when STM32 reply is loaded and waiting to be read |
+| Data ready | IO4 | PD10 | STM32 to ESP32-S3 | Indicator for when STM32 reply is loaded and waiting to be read |
 
 ### SPI settings
 - Mode: 0
@@ -43,6 +43,20 @@
   - The ESP32-S3 must read the reply before sending a new request. 
 - Timeout if it never goes high.
   - The ESP32-S3 waits up to a timeout (value in §7) then retries.
+
+### (PROPOSED) Reading a reply
+
+When data ready goes high, the ESP32-S3 reads the reply in one transfer, header first:
+
+1. Pull CS low.
+2. Clock out the 3-byte header (Start, Command, Length).
+3. Read N from the Length byte.
+4. Clock out N + 2 more bytes (payload + CRC).
+5. Pull CS high.
+
+### (PROPOSED) Dummy bytes
+
+- While reading a reply, the ESP32-S3 sends **0x00** on MOSI (or any dummy byte except for 0xA5, which the parser would mistake for a new frame). The STM32 ignores these bytes, because they carry no meaning.
 
 
 ## 3. Frame format
@@ -64,7 +78,7 @@
 
 **(PROPOSED) Angles in degrees.** Reason: Easy for people to read in logs, the GUI and the PDR slides
 
-**(OPEN) Axis Order and Sign Convention.** TBC by Anisha/Naoki?
+**(OPEN) Axis Order and Sign Convention.** TBC by Role 2
 
 
 ## 5. Commands and reply layouts
@@ -154,7 +168,7 @@ Replies repeat the request's command code so the ESP32-S3 can check the reply ma
 
 ### Retries
 
-- (PROPOSED) Upon NACK, the ESP32-S3 resends up to 3 tries (final value in §7), then reports a comms fault to the laptop.
+- (PROPOSED) Upon NACK, the ESP32-S3 resends up to 3 tries, then reports a comms fault to the laptop.
 - (PROPOSED) If reply itself arrives at the ESP32-S3 with bad CRC/no arrival within the data-ready timeout (§7): Treat it as failed attempt, try resend (counted as one of 3 tries). 
 
 
@@ -202,7 +216,7 @@ Full frame: `A5 01 08 00 00 20 41 00 00 00 00 29 B2`  (13 bytes)
 | 7–10 | 00 00 00 00 | Axis 2 = 0.0 (float32, little-endian) |
 | 11–12 | 29 B2 | CRC-16/CCITT-FALSE, high byte first |
 
-Checked with Python struct.pack('<ff', 10.0, 0.0) and binascii.crc_hqx(data, 0xFFFF) (CRC computed over bytes 1–10)
+Checked with Python `struct.pack('<ff', 10.0, 0.0)` and `binascii.crc_hqx(data, 0xFFFF)` (CRC computed over bytes 1–10)
 
 ## 9. Open questions and version history
 
