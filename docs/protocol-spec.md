@@ -177,5 +177,21 @@ Formula: Time on the wire (µs) = bytes × 8 ÷ clock (MHz)
 
 
 ## 8. Worked examples (hex)
+
+### SET_ATTITUDE: axis 1 = 10°, axis 2 = 0°
+
+Full frame: `A5 01 08 00 00 20 41 00 00 00 00 29 B2`  (13 bytes)
+
+| Byte(s) | Value | Meaning |
+|---|---|---|
+| 0 | A5 | Start |
+| 1 | 01 | Command: SET_ATTITUDE |
+| 2 | 08 | Length N |
+| 3–6 | 00 00 20 41 | Axis 1 = 10.0 (float32, little-endian) |
+| 7–10 | 00 00 00 00 | Axis 2 = 0.0 (float32, little-endian) |
+| 11–12 | 29 B2 | CRC-16/CCITT-FALSE, high byte first |
+
+Checked with Python struct.pack('<ff', 10.0, 0.0) and binascii.crc_hqx(data, 0xFFFF) (CRC computed over bytes 1–10)
+
 ## 9. Open questions and version history
 **(OPEN) Axis Order and Sign Convention.** TBC by Anisha/Naoki?
