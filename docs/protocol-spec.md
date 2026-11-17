@@ -194,4 +194,19 @@ Full frame: `A5 01 08 00 00 20 41 00 00 00 00 29 B2`  (13 bytes)
 Checked with Python struct.pack('<ff', 10.0, 0.0) and binascii.crc_hqx(data, 0xFFFF) (CRC computed over bytes 1–10)
 
 ## 9. Open questions and version history
-**(OPEN) Axis Order and Sign Convention.** TBC by Anisha/Naoki?
+
+### Open questions
+
+| # | Question | From | Who decides | By |
+|---|---|---|---|---|
+| 1 | Axis order and sign convention | §4 | Role 2 | 23 Nov meeting |
+| 2 | Which IMU axes (X/Y/Z) map to cube axes 1 and 2? Is yaw used at all, given it drifts? | §5 (READ_SENSORS, GET_ATTITUDE) | Role 2/3 | 23 Nov meeting |
+| 3 | Fault flag bit layout | §5 (STATUS) | Role 3 (errors and safety) | 22 Nov |
+| 4 | Does SAFE return to RUNNING automatically when commands resume? | §5 (STATUS) | Role 3 | 22 Nov |
+| 5 | Minimum gap between frames (100 µs) | §7 | Role 3 | 23 Nov meeting |
+
+### Version history
+
+| Version | Date | Change |
+|---|---|---|
+| 0.1 | 17 Nov 2026 | First draft: §2–§8 |
