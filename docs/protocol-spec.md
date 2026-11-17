@@ -116,8 +116,35 @@ Version 0.1 (draft) · Owner: Kai · Status: not yet agreed
 
 (OPEN) Does SAFE return to RUNNING automatically when commands resume? See errors and safety.
 
+
 ## 6. ACK, NACK and errors
 
+**(PROPOSED)**
+
+### Rule
+Replies repeat the request's command code so the ESP32-S3 can check the reply matches, and knows how to read the reply payload.
+
+### Reply types
+
+| Situation | Reply command byte | Payload |
+|---|---|---|
+| Request OK (SET_ATTITUDE) | 0x01 (echo) | 1 byte: 0x00 (ACK) |
+| Request OK (GET/READ/STATUS) | 0x02/0x03/0x04 (echo) | See §5 |
+| Request bad | 0xFF (NACK) | 1 byte: status code (refer below) |
+
+### Status codes
+
+| Code | Meaning |
+|---|---|
+| 0x00 | ACK |
+| 0x01 | Bad CRC |
+| 0x02 | Unknown command |
+| 0x03 | Wrong length |
+
+### Retries
+
+- (PROPOSED) Upon NACK, the ESP32-S3 resends up to 3 tries (final value in §7), then reports a comms fault to the laptop.
+- (PROPOSED) If reply itself arrives at the ESP32-S3 with bad CRC/no arrival: Treat it as failed attempt, try resend (counted as one of 3 tries). 
 
 
 ## 7. Timing
