@@ -44,6 +44,7 @@ Version 0.1 (draft) · Owner: Kai · Status: not yet agreed
 | 3 to N+2 | Payload | N (0-255) | Layout depends on the command. Maximum payload is 255 bytes. See §4 for byte order and units, §5 for layouts. |
 | N+3 to N+4 | CRC | 2 | (PROPOSED) CRC-16/CCITT-FALSE over Command + Length + Payload, high byte first |
 
+
 ## 4. Numbers, byte order and units
 
 **(PROPOSED) Angles use float32.** Reason: Proposed in team docs, float32 sends decimals directly
@@ -56,7 +57,69 @@ Version 0.1 (draft) · Owner: Kai · Status: not yet agreed
 
 
 ## 5. Commands and reply layouts
+
+| Command | Name | Request payload | Reply |
+|---|---|---|---|
+| 0x01 | SET_ATTITUDE | 2 × float32 target angles (8 bytes) | ACK/NACK (see §6) |
+| 0x02 | READ_SENSORS | None (N = 0) | Acceleration, gyro, wheel speeds, bus voltage and current |
+| 0x03 | GET_ATTITUDE | None (N = 0) | Roll, pitch, yaw and timestamp |
+| 0x04 | STATUS | None (N = 0) | State and fault flags |
+
+### 0x01 SET_ATTITUDE: request payload (N = 8)
+
+| Offset | Field | Type | Units |
+|---|---|---|---|
+| 0–3 | Target angle, axis 1 | float32 (little-endian) | degrees |
+| 4–7 | Target angle, axis 2 | float32 (little-endian) | degrees |
+
+### 0x02 READ_SENSORS: reply payload (N = 40)
+
+(PROPOSED) Units for all fields.
+
+| Offset | Field | Type | Units |
+|---|---|---|---|
+| 0–3 | Accel X | float32 (little-endian) | m/s² |
+| 4–7 | Accel Y | float32 (little-endian) | m/s² |
+| 8–11 | Accel Z | float32 (little-endian) | m/s² |
+| 12–15 | Gyro X | float32 (little-endian) | deg/s |
+| 16–19 | Gyro Y | float32 (little-endian) | deg/s |
+| 20–23 | Gyro Z | float32 (little-endian) | deg/s |
+| 24–27 | Wheel speed, axis 1 | float32 (little-endian) | rpm |
+| 28–31 | Wheel speed, axis 2 | float32 (little-endian) | rpm |
+| 32–35 | Bus voltage | float32 (little-endian) | V |
+| 36–39 | Bus current | float32 (little-endian) | A |
+
+### 0x03 GET_ATTITUDE: reply payload (N = 16)
+
+| Offset | Field | Type | Units |
+|---|---|---|---|
+| 0–3 | Roll | float32 (little-endian) | degrees |
+| 4–7 | Pitch | float32 (little-endian) | degrees |
+| 8–11 | Yaw | float32 (little-endian) | degrees |
+| 12–15 | Timestamp | (PROPOSED) uint32 (little-endian) | (PROPOSED) ms since STM32 power-on |
+
+### 0x04 STATUS: reply payload (N = 2)
+
+| Offset | Field | Type | Units |
+|---|---|---|---|
+| 0 | State | uint8 | — (see state values below) |
+| 1 | Fault flags | uint8 | — (bit layout: OPEN, see errors and safety) |
+
+**(PROPOSED) State values**
+
+| Value | State | Meaning |
+|---|---|---|
+| 0 | BOOT | System is switched on, starting up (checking IMU, motors not running yet) |
+| 1 | RUNNING | Balancing and following target from SET_ATTITUDE |
+| 2 | SAFE | Link lost, cube is in agreed safe behaviour |
+| 3 | FAULT | Hardware problem (IMU, motor etc.) |
+
+(OPEN) Does SAFE return to RUNNING automatically when commands resume? See errors and safety.
+
 ## 6. ACK, NACK and errors
+
+
+
 ## 7. Timing
 ## 8. Worked examples (hex)
 ## 9. Open questions and version history
